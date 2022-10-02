@@ -1,0 +1,61 @@
+#include <WiFi.h>
+
+const char *ssid = "SLAYER";
+const char *password = "Vanguardia2021";
+int cm = 0;
+const int trigPin = 4;
+const int echoPin = 2;
+long duration;
+
+int readUltrasonicDistance()
+{
+digitalWrite(trigPin, LOW);
+delayMicroseconds(2);
+// Sets the trigPin on HIGH state for 10 micro seconds
+digitalWrite(trigPin, HIGH);
+delayMicroseconds(10);
+digitalWrite(trigPin, LOW);
+
+// Reads the echoPin, returns the sound wave travel time in microseconds
+duration = pulseIn(echoPin, HIGH);
+cm= duration*0.01723;
+
+return cm;
+}
+void setup() {
+  delay(10);
+  Serial.begin(115200);
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT);
+  WiFi.begin(ssid, password);
+
+  Serial.print("Conectando...");
+  while (WiFi.status() != WL_CONNECTED) { //Check for the connection
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.print("Conectado con éxito, mi IP es: ");
+  Serial.println(WiFi.localIP());
+
+}
+void loop()
+{
+  WiFiClient client;
+   const uint16_t port = 8080;
+   const char * host = "192.168.0.168";
+  if(!client.connect(host,port)){
+     Serial.println("Coneccion fallida.");
+        Serial.println("Espere...");
+        delay(5000);
+        return;
+  }
+  client.print(readUltrasonicDistance());
+  
+    Serial.println("Closing connection.");
+    client.stop();
+
+    Serial.println("Waiting 5 seconds before restarting...");
+    delay(5000);
+}
+  
