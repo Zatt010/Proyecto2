@@ -41,10 +41,10 @@ def multi_threaded_client(connection,lock):
         data = connection.recv(2048)
         if not data:
             pin=measureDistance(int(cm))
-            """pin=str(4)"""
+            
             break
         else:
-            print(data.decode('utf-8'))
+            print('distancia en cm: '+ data.decode('utf-8'))
             cm = data.decode('utf-8')
         
     lock.release()
